@@ -5,7 +5,7 @@ import java.util.*;
 
 public class CustomerService {
 
-    public NavigableMap<Customer, String> customerStringNavigableMap = new TreeMap<>(Comparator.comparingLong(Customer::getScores));
+    private final NavigableMap<Customer, String> customerStringNavigableMap = new TreeMap<>(Comparator.comparingLong(Customer::getScores));
 
     public Map.Entry<Customer, String> getSmallest() {
         Map.Entry<Customer, String> data = customerStringNavigableMap.firstEntry();
