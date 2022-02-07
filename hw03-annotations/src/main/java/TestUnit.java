@@ -4,17 +4,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class TestUnit {
 
-    public static void startTest(Object obj, Class clazz) {
+    public static void startTest(Class clazz) {
+
         List<Method> methods = Arrays.stream(clazz.getDeclaredMethods()).toList();
         List<Method> before = new ArrayList<>();
         List<Method> test = new ArrayList<>();
         List<Method> after = new ArrayList<>();
+        HashMap<String, String> stat = new HashMap<>();
 
         for (Method inspectedMethod : methods) {
             if (inspectedMethod.getDeclaredAnnotations().length > 0) {
@@ -36,9 +36,26 @@ public class TestUnit {
             }
 
         }
-        invokeBefore(before, obj);
-        invokeTest(test, obj);
-        invokeAfter(after, obj);
+        for (Method method : test) {
+            Object newInstance = generateInstance(clazz);
+
+            invokeBefore(before, newInstance);
+            stat.putAll(invokeTest(method, newInstance));
+            invokeAfter(after, newInstance);
+        }
+        System.out.println(stat);
+
+    }
+
+    private static Object generateInstance(Class clazz) {
+        Object object = new Object();
+        try {
+            object = clazz.getDeclaredConstructor().newInstance();
+
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException exception) {
+            System.err.println(Arrays.stream(exception.getStackTrace()).toList());
+        }
+        return object;
     }
 
     private static void invokeBefore(List<Method> beforeMethodList, Object obj) {
@@ -55,17 +72,19 @@ public class TestUnit {
         }
     }
 
-    private static void invokeTest(List<Method> testMethodList, Object obj) {
-        if (testMethodList.size() <= 0) {
+    private static HashMap<String, String> invokeTest(Method testMethod, Object obj) {
+        if (testMethod == null) {
             throw new RuntimeException("Должно быть больше @Test");
         } else {
-            for (Method method : testMethodList) {
-                try {
-                    method.invoke(obj);
-                } catch (InvocationTargetException | IllegalAccessException exception) {
-                    System.err.println(Arrays.stream(exception.getStackTrace()).toList());
-                }
+            HashMap<String, String> stat = new HashMap<>();
+            try {
+                testMethod.invoke(obj);
+                stat.put(testMethod.getName(), "OK");
+            } catch (InvocationTargetException | IllegalAccessException exception) {
+                System.err.println(Arrays.stream(exception.getStackTrace()).toList());
+                stat.put(testMethod.getName(), "X");
             }
+            return stat;
         }
     }
 
