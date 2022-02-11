@@ -48,6 +48,7 @@ public class TestUnit {
                 }
             } else {
                 stat.put(method.getName(), false);
+                invokeAfter(after,newInstance);
             }
         }
         System.out.println(stat);
