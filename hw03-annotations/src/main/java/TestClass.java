@@ -2,6 +2,7 @@ public class TestClass {
     @TestUnit.Before
     public void before() {
         System.out.println("Before-0");
+      //  throw new RuntimeException("hi im before exception");
     }
 
     @TestUnit.Test
@@ -31,10 +32,11 @@ public class TestClass {
     @TestUnit.After
     public void after() {
         System.out.println("After-0");
+     //   throw new RuntimeException("hi im after exception");
     }
 
     @TestUnit.Test
-    public void test1000(){
+    public void test1000() {
         System.out.println("123123");
     }
 }

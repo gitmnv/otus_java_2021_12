@@ -14,7 +14,7 @@ public class TestUnit {
         List<Method> before = new ArrayList<>();
         List<Method> test = new ArrayList<>();
         List<Method> after = new ArrayList<>();
-        HashMap<String, String> stat = new HashMap<>();
+        HashMap<String, Boolean> stat = new HashMap<>();
 
         for (Method inspectedMethod : methods) {
             if (inspectedMethod.getDeclaredAnnotations().length > 0) {
@@ -37,11 +37,17 @@ public class TestUnit {
 
         }
         for (Method method : test) {
+
             Object newInstance = generateInstance(clazz);
 
-            invokeBefore(before, newInstance);
-            stat.putAll(invokeTest(method, newInstance));
-            invokeAfter(after, newInstance);
+            if (invokeBefore(before, newInstance)) {
+                stat.putAll(invokeTest(method, newInstance));
+                if (!invokeAfter(after, newInstance)){
+                    stat.put(method.getName(),false);
+                }
+            } else {
+                stat.put(method.getName(), false);
+            }
         }
         System.out.println(stat);
 
@@ -58,7 +64,7 @@ public class TestUnit {
         return object;
     }
 
-    private static void invokeBefore(List<Method> beforeMethodList, Object obj) {
+    private static boolean invokeBefore(List<Method> beforeMethodList, Object obj) {
         if (beforeMethodList.size() > 1) {
             throw new RuntimeException("Должна быть 1 @Before");
         } else {
@@ -67,28 +73,30 @@ public class TestUnit {
                     method.invoke(obj);
                 } catch (InvocationTargetException | IllegalAccessException exception) {
                     System.err.println(Arrays.stream(exception.getStackTrace()).toList());
+                    return false;
                 }
             }
+            return true;
         }
     }
 
-    private static HashMap<String, String> invokeTest(Method testMethod, Object obj) {
+    private static HashMap<String, Boolean> invokeTest(Method testMethod, Object obj) {
         if (testMethod == null) {
             throw new RuntimeException("Должно быть больше @Test");
         } else {
-            HashMap<String, String> stat = new HashMap<>();
+            HashMap<String, Boolean> stat = new HashMap<>();
             try {
                 testMethod.invoke(obj);
-                stat.put(testMethod.getName(), "OK");
+                stat.put(testMethod.getName(), true);
             } catch (InvocationTargetException | IllegalAccessException exception) {
                 System.err.println(Arrays.stream(exception.getStackTrace()).toList());
-                stat.put(testMethod.getName(), "X");
+                stat.put(testMethod.getName(), false);
             }
             return stat;
         }
     }
 
-    private static void invokeAfter(List<Method> afterMethodList, Object obj) {
+    private static boolean invokeAfter(List<Method> afterMethodList, Object obj) {
         if (afterMethodList.size() > 1) {
             throw new RuntimeException("Должна быть 1 @After");
         } else {
@@ -97,8 +105,10 @@ public class TestUnit {
                     method.invoke(obj);
                 } catch (InvocationTargetException | IllegalAccessException exception) {
                     System.err.println(Arrays.stream(exception.getStackTrace()).toList());
+                    return false;
                 }
             }
+            return true;
         }
     }
 
