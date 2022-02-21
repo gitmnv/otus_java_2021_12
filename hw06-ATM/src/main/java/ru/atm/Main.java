@@ -12,7 +12,7 @@ public class Main {
         System.out.println(atm.balance());
         atm.withdrawal(clientMoney);
         System.out.println(atm.balance());
-        System.out.println(atm.out(19900));
+        System.out.println(atm.out(7000));
         System.out.println(atm.balance());
     }
 }

@@ -8,6 +8,7 @@ public enum Banknote {
     TWO_HUNDRED(200),
     ONE_HUNDRED(100);
 
+    private static final int minimumDenominationOfBanknotes = ONE_HUNDRED.getValue();
 
     private final int value;
 
@@ -17,5 +18,9 @@ public enum Banknote {
 
     public int getValue() {
         return value;
+    }
+
+    public static int getMinimumDenominationOfBanknotes() {
+        return minimumDenominationOfBanknotes;
     }
 }

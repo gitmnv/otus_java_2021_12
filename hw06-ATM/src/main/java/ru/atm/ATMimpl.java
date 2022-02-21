@@ -3,7 +3,7 @@ package ru.atm;
 import java.util.List;
 
 public class ATMimpl implements ATM {
-    private final Core atmCore = new ATMcore();
+    private final AtmCore atmCore = new ATMcoreImpl();
 
     @Override
     public void withdrawal(List<Banknote> banknotes) {
@@ -17,10 +17,12 @@ public class ATMimpl implements ATM {
 
     @Override
     public List<Banknote> out(int count) {
-        if (count % 100 == 0) {
+        int minimumDenominationOfBanknotes = Banknote.getMinimumDenominationOfBanknotes();
+
+        if (count % minimumDenominationOfBanknotes == 0) {
             return atmCore.out(count);
         } else {
-            throw new RuntimeException("Сумма должна быть кратна 100");
+            throw new RuntimeException("Сумма должна быть кратна " + minimumDenominationOfBanknotes);
         }
     }
 

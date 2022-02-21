@@ -2,7 +2,7 @@ package ru.atm;
 
 import java.util.List;
 
-public class ATMcore implements Core {
+public class ATMcoreImpl implements AtmCore {
 
     private final Safe moneySafe = new SafeImpl();
 

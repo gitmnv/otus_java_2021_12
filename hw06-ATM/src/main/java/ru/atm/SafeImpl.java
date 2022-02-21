@@ -8,16 +8,17 @@ public class SafeImpl implements Safe {
 
     private HashMap<Banknote, Integer> banknoteSafe = new HashMap<>();
     private final List<Banknote> banknoteNominalList = new ArrayList<>();
+    private HashMap<Banknote, Integer> bak = new HashMap<>();
 
     SafeImpl() {
         banknoteNominalList.addAll(Arrays.stream(Banknote.values()).toList());
 
         banknoteSafe.putAll(Map.of(   //загрузка стартового набора банкнот
-                FIVE_HUNDRED, 100,
-                ONE_HUNDRED, 100,
-                TWO_HUNDRED, 100,
-                ONE_THOUSAND, 100,
-                TWO_THOUSAND, 100,
+                FIVE_HUNDRED, 2,
+                ONE_HUNDRED, 0,
+                TWO_HUNDRED, 0,
+                ONE_THOUSAND, 0,
+                TWO_THOUSAND, 0,
                 FIVE_THOUSAND, 1));
     }
 
@@ -28,30 +29,32 @@ public class SafeImpl implements Safe {
     }
 
     @Override
-    public List<Banknote> get(int count) {
+    public List<Banknote> get(int outSumm) {
         List<Banknote> banknotes = new ArrayList<>();
-        HashMap<Banknote, Integer> bak = banknoteSafe;
+        try {
+            bak = createSafeBackup();
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
 
         try {
-            for (int i = 0; i < banknoteNominalList.size() && count > 0; i++) {
+            for (int i = 0; i < banknoteNominalList.size() && outSumm > 0; i++) {
                 Banknote banknote = banknoteNominalList.get(i);
-                int banknoteSafeCount = banknoteSafe.get(banknote);
-                if (count >= banknote.getValue()) {
-                    do {
-                        banknotes.add(banknote);
-                        banknoteSafeCount--;
-                        count -= banknote.getValue();
-                    } while (count >= banknote.getValue() && banknoteSafeCount > 0);
+                Integer banknoteCountInSafe = banknoteSafe.get(banknote);
+                if (banknoteCountInSafe > 0) {
+                    List<Banknote> banknoteFromSafe = getBanknotesFromSafe(banknote, outSumm);
+                    outSumm -= banknote.getValue() * banknoteFromSafe.size();
+                    banknoteSafe.put(banknote, banknoteCountInSafe - banknoteFromSafe.size());
+                    banknotes.addAll(banknoteFromSafe);
                 }
-                banknoteSafe.put(banknote, banknoteSafeCount);
             }
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        if (count != 0) { //если что то идет не так, то выдача дс отменяется.
-            banknoteSafe = bak;
+        if (outSumm != 0) { //если что то идет не так, то выдача дс отменяется.
+            restoreSafeFromBackup(bak);
             banknotes = new ArrayList<>();
-            throw new RuntimeException("Банкомат не работает");
+            throw new RuntimeException("Банкомат не может выдать требуемую сумму.");
         } else {
             return banknotes;
         }
@@ -64,5 +67,33 @@ public class SafeImpl implements Safe {
             balance += banknoteSafe.get(banknote) * banknote.getValue();
         }
         return balance;
+    }
+
+    private List<Banknote> getBanknotesFromSafe(Banknote banknote, int count) {
+        List<Banknote> banknotes = new ArrayList<>();
+
+        int banknoteSafeCount = banknoteSafe.get(banknote);
+        if (count >= banknote.getValue()) {
+            do {
+                banknotes.add(banknote);
+                banknoteSafeCount--;
+                count -= banknote.getValue();
+            } while (banknoteSafeCount > 0 && count >= banknote.getValue());
+        }
+        banknoteSafe.put(banknote, banknoteSafeCount);
+
+        return banknotes;
+    }
+
+    private HashMap<Banknote, Integer> createSafeBackup() {
+        return new HashMap<>(Map.copyOf(banknoteSafe));
+    }
+
+    private void restoreSafeFromBackup(HashMap<Banknote, Integer> backup) {
+        banknoteSafe = backup;
+    }
+
+    private void calculateMoney() {
+
     }
 }
