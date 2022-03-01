@@ -12,7 +12,6 @@ public class ATMimpl implements ATM {
         } else {
             throw new RuntimeException("Необходимо внести наличные");
         }
-
     }
 
     @Override

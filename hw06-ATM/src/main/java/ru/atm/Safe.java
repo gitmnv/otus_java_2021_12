@@ -1,11 +1,8 @@
 package ru.atm;
 
-import java.util.List;
-
 public interface Safe {
-    void add(Banknote banknote);
+    void set(Integer count, Banknote banknote);
 
-    List<Banknote> get(int count);
+    Integer get(Banknote banknote);
 
-    int getBalance();
 }
