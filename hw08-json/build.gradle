@@ -6,11 +6,12 @@ sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 dependencies {
-    implementation 'com.google.guava:guava'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'javax.json:javax.json-api'
-    implementation 'org.glassfish:javax.json'
-    implementation 'com.google.protobuf:protobuf-java-util'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2'
+    implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
+
+    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.19.4'
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
