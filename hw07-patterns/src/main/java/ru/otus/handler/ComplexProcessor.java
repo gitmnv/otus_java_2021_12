@@ -26,9 +26,11 @@ public class ComplexProcessor implements Handler {
             try {
                 newMsg = pros.process(newMsg);
             } catch (Exception ex) {
+                System.out.println(ex.toString());
                 errorHandler.accept(ex);
             }
         }
+
         notify(newMsg);
         return newMsg;
     }

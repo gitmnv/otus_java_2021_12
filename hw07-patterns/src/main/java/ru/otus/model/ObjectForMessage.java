@@ -1,5 +1,8 @@
 package ru.otus.model;
 
+import lombok.Builder;
+import lombok.Data;
+
 import java.util.List;
 
 public class ObjectForMessage {
@@ -11,5 +14,10 @@ public class ObjectForMessage {
 
     public void setData(List<String> data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "ObjectForMessage(data=" + data.toString() + ")";
     }
 }

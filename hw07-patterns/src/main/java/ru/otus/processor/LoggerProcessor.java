@@ -12,7 +12,7 @@ public class LoggerProcessor implements Processor {
     }
 
     @Override
-    public Message process(Message message) {
+    public Message process(Message message){
         System.out.println("log processing message:" + message);
         return processor.process(message);
     }
