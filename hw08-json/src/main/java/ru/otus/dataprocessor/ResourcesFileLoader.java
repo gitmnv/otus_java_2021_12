@@ -25,6 +25,7 @@ public class ResourcesFileLoader implements Loader {
     private String generatePath(String fileName){
 
         return System.getProperty("user.dir")+"\\src\\test\\resources\\"+fileName;
+
     }
 
     @Override
