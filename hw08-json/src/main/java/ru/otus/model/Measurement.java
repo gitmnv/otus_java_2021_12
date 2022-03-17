@@ -1,7 +1,11 @@
 package ru.otus.model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import ru.otus.dataprocessor.CustomDeserializer;
+
 //Допустим, этот класс библиотечный, его нельзя менять
+@JsonDeserialize(using = CustomDeserializer.class)
 public final class Measurement {
     private final String name;
     private final double value;
