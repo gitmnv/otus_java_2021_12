@@ -14,15 +14,6 @@ public class ProcessorAggregator implements Processor {
             values.merge(datum.getName(), datum.getValue(), Double::sum);
         }
         //группирует выходящий список по name, при этом суммирует поля value
-        return values.entrySet().stream()
-                .sorted(Comparator.comparing(e -> -e.getKey().length()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (a, b) -> {
-                            throw new AssertionError();
-                        },
-                        LinkedHashMap::new
-                ));
+      return values;
     }
 }

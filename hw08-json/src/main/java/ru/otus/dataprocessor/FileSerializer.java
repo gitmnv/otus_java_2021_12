@@ -1,39 +1,34 @@
 package ru.otus.dataprocessor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 
 public class FileSerializer implements Serializer {
 
-    private String fileName;
-
+    private final ObjectMapper mapper;
+    private final FileWriter fileWriter;
 
     public FileSerializer(String fileName) {
-        this.fileName = fileName;
+        this.mapper = new ObjectMapper();
+        try {
+            this.fileWriter = new FileWriter(fileName);
+        } catch (IOException exception) {
+            throw new FileProcessException(exception.getMessage());
+        }
     }
 
     @Override
     public void serialize(Map<String, Double> data) {
-        List<String> keySet = data.keySet().stream().toList();
-
         try {
-            FileWriter fileWriter = new FileWriter(fileName);
-            StringBuilder text = new StringBuilder();
-            text.append("{");
-            for (String s : keySet) {
-                text.append("\"").append(s).append("\"");
-                text.append(":").append(data.get(s)).append(",");
-            }
-            text.setLength(text.length() - 1);
-            text.append("}");
-            fileWriter.write(text.toString());
+            String text = mapper.writeValueAsString(data);
+            fileWriter.write(text);
             fileWriter.flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException exception) {
+            throw new FileProcessException(exception.getMessage());
         }
     }
-    //формирует результирующий json и сохраняет его в файл
+//формирует результирующий json и сохраняет его в файл
 }
 
