@@ -1,11 +1,16 @@
 package ru.otus.dataprocessor;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import ru.otus.model.Measurement;
 import ru.otus.model.MeasurementTemp;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,19 +18,16 @@ import java.util.List;
 public class ResourcesFileLoader implements Loader {
 
     private FileInputStream inputStream;
+    private ObjectMapper objectMapper;
 
 
     public ResourcesFileLoader(String fileName) {
         try {
-            inputStream = new FileInputStream(generatePath(fileName));
+            inputStream = new FileInputStream(getFile(fileName));
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         }
-    }
-    private String generatePath(String fileName){
-
-        return System.getProperty("user.dir")+"\\src\\test\\resources\\"+fileName;
-
+        objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -51,5 +53,24 @@ public class ResourcesFileLoader implements Loader {
         }
         //читает файл, парсит и возвращает результат
         return measurementList;
+    }
+
+    public List<Measurement> load(String s) {
+
+        return null;
+    }
+
+    private File getFile(String name) {
+        URL resource = getClass().getClassLoader().getResource(name);
+        if (resource == null) {
+            throw new IllegalArgumentException("file not found!");
+        } else {
+            try {
+                return new File(resource.toURI());
+            } catch (URISyntaxException e) {
+                throw new FileProcessException(e.getMessage());
+            }
+
+        }
     }
 }
