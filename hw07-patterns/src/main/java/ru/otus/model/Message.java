@@ -1,6 +1,8 @@
 package ru.otus.model;
 
-import java.util.List;
+import lombok.Builder;
+
+import java.awt.*;
 
 public class Message {
     private final long id;
@@ -23,8 +25,6 @@ public class Message {
                     String field4, String field5, String field6, String field7,
                     String field8, String field9, String field10,
                     String field11, String field12, ObjectForMessage field13) {
-        ObjectForMessage objectForMessage = new ObjectForMessage();
-        objectForMessage.setData(field13.getData());
         this.id = id;
         this.field1 = field1;
         this.field2 = field2;
@@ -38,7 +38,24 @@ public class Message {
         this.field10 = field10;
         this.field11 = field11;
         this.field12 = field12;
-        this.field13 = objectForMessage;
+        this.field13 = field13;
+    }
+
+    public Message(Message message) {
+        this.id = message.getId();
+        this.field1 = message.getField1();
+        this.field2 = message.getField2();
+        this.field3 = message.getField3();
+        this.field4 = message.getField4();
+        this.field5 = message.getField5();
+        this.field6 = message.getField6();
+        this.field7 = message.getField7();
+        this.field8 = message.getField8();
+        this.field9 = message.getField9();
+        this.field10 = message.getField10();
+        this.field11 = message.getField11();
+        this.field12 = message.getField12();
+        this.field13 = new ObjectForMessage(message.getField13().getData());
     }
 
     public long getId() {

@@ -1,12 +1,16 @@
 package ru.otus.model;
 
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.List;
 
 public class ObjectForMessage {
     private List<String> data;
+
+    public ObjectForMessage() {
+    }
+
+    public ObjectForMessage(List<String> list) {
+        this.data = list;
+    }
 
     public List<String> getData() {
         return data;
