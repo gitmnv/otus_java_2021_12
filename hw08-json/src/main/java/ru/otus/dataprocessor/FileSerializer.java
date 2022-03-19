@@ -8,23 +8,21 @@ import java.util.Map;
 public class FileSerializer implements Serializer {
 
     private final ObjectMapper mapper;
-    private final FileWriter fileWriter;
+    private final String fileName;
 
     public FileSerializer(String fileName) {
         this.mapper = new ObjectMapper();
-        try {
-            this.fileWriter = new FileWriter(fileName);
-        } catch (IOException exception) {
-            throw new FileProcessException(exception.getMessage());
-        }
+        this.fileName = fileName;
     }
 
     @Override
     public void serialize(Map<String, Double> data) {
         try {
+            final FileWriter fileWriter = new FileWriter(fileName);
             String text = mapper.writeValueAsString(data);
             fileWriter.write(text);
             fileWriter.flush();
+            fileWriter.close();
         } catch (IOException exception) {
             throw new FileProcessException(exception.getMessage());
         }

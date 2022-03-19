@@ -11,29 +11,27 @@ import java.util.List;
 
 public class ResourcesFileLoader implements Loader {
 
-    private final FileInputStream inputStream;
+    private final String fileName;
     private final ObjectMapper objectMapper;
     private static final String encoding = "UTF8";
 
     public ResourcesFileLoader(String fileName) {
-        try {
-            inputStream = new FileInputStream(getFile(fileName));
-        } catch (FileNotFoundException exception) {
-            throw new FileProcessException(exception.getMessage());
-        }
+        this.fileName = fileName;
         objectMapper = new ObjectMapper();
     }
 
     @Override
     public List<Measurement> load() {
-        String json = "";
+        String json;
         List<Measurement> measurementList;
 
         try {
+            final FileInputStream inputStream = new FileInputStream(getFile(fileName));
             json = new String(inputStream.readAllBytes(), encoding);
 
             measurementList = objectMapper.readValue(json, new TypeReference<>() {
             });
+            inputStream.close();
         } catch (IOException exception) {
             throw new FileProcessException(exception.getMessage());
         }
