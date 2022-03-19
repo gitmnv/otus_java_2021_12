@@ -2,11 +2,9 @@ package ru.otus.processor;
 
 import ru.otus.model.Message;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 
 public class TimeProcessor implements Processor {
-    DateTimeProvider dateTimeProvider;
+    private final DateTimeProvider dateTimeProvider;
 
     public TimeProcessor(DateTimeProvider dateTimeProvider) {
         this.dateTimeProvider = dateTimeProvider;
