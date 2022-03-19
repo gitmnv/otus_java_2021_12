@@ -1,8 +1,7 @@
 package ru.otus.model;
 
-import lombok.Builder;
 
-import java.awt.*;
+import java.util.ArrayList;
 
 public class Message {
     private final long id;
@@ -55,7 +54,7 @@ public class Message {
         this.field10 = message.getField10();
         this.field11 = message.getField11();
         this.field12 = message.getField12();
-        this.field13 = new ObjectForMessage(message.getField13().getData());
+        this.field13 = new ObjectForMessage(new ArrayList<>(message.getField13().getData().stream().toList()));
     }
 
     public long getId() {
