@@ -1,23 +1,25 @@
 package ru.otus.handler;
 
 
+import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.model.Message;
 import ru.otus.listener.Listener;
+import ru.otus.processor.DateTimeProvider;
 import ru.otus.processor.Processor;
+import ru.otus.processor.TimeException;
+import ru.otus.processor.TimeProcessor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 class ComplexProcessorTest {
 
@@ -93,6 +95,31 @@ class ComplexProcessorTest {
 
         //then
         verify(listener, times(1)).onUpdated(message);
+    }
+
+    @Test
+    @DisplayName("Тестируем TimeProcessor")
+    void TimeProcessorTest() throws RuntimeException {
+        var message = new Message.Builder(1L).field7("field7").build();
+        var dateTimeProvider = new DateTimeProvider() {
+            @Override
+            public LocalDateTime getDate() {
+                return LocalDateTime.now();
+            }
+        };
+
+        var processor = new TimeProcessor(dateTimeProvider);
+
+        if (dateTimeProvider.getDate().getSecond() % 2 == 0) {
+            Exception exception = assertThrows(TimeException.class, () -> {
+                processor.process(message);
+            });
+            var expectedMessage = "Time error: seconds are even";
+            var actualMessage = exception.getMessage();
+            assertTrue(actualMessage.contains(expectedMessage));
+        } else {
+            assertThat(message).isEqualTo(processor.process(message));
+        }
     }
 
     private static class TestException extends RuntimeException {

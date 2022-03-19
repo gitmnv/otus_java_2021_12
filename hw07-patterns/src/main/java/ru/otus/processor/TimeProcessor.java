@@ -14,7 +14,7 @@ public class TimeProcessor implements Processor {
     public Message process(Message message) {
         System.out.println(dateTimeProvider.getDate().getSecond());
         if (dateTimeProvider.getDate().getSecond() % 2 == 0) {
-            throw new RuntimeException("Time error: " + " getSecond() % 2 == " + dateTimeProvider.getDate().getSecond() % 2);
+            throw new TimeException("Time error: seconds are even");
         } else {
             return message;
         }
