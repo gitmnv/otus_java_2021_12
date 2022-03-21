@@ -101,25 +101,30 @@ class ComplexProcessorTest {
     @DisplayName("Тестируем TimeProcessor")
     void TimeProcessorTest() throws RuntimeException {
         var message = new Message.Builder(1L).field7("field7").build();
-        var dateTimeProvider = new DateTimeProvider() {
+        var dateTimeProvider1 = new DateTimeProvider() {
             @Override
             public LocalDateTime getDate() {
-                return LocalDateTime.now();
+                return LocalDateTime.of(2022, 3, 24, 5, 0, 1);
+            }
+        };
+        var dateTimeProvider2 = new DateTimeProvider() {
+            @Override
+            public LocalDateTime getDate() {
+                return LocalDateTime.of(2022, 3, 24, 5, 0, 2);
             }
         };
 
-        var processor = new TimeProcessor(dateTimeProvider);
+        var processor1 = new TimeProcessor(dateTimeProvider1);
+        var processor2 = new TimeProcessor(dateTimeProvider2);
 
-        if (dateTimeProvider.getDate().getSecond() % 2 == 0) {
-            Exception exception = assertThrows(TimeException.class, () -> {
-                processor.process(message);
-            });
-            var expectedMessage = "Time error: seconds are even";
-            var actualMessage = exception.getMessage();
-            assertTrue(actualMessage.contains(expectedMessage));
-        } else {
-            assertThat(message).isEqualTo(processor.process(message));
-        }
+        assertThat(message).isEqualTo(processor1.process(message));
+
+        Exception exception = assertThrows(TimeException.class, () -> {
+            processor2.process(message);
+        });
+        var expectedMessage = "Time error: seconds are even";
+        var actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     private static class TestException extends RuntimeException {
