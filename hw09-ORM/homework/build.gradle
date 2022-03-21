@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+dependencies {
+    implementation project(':hw09-ORM:demo')
+
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.11'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.4'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.36'
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.with {
+        encoding = 'UTF-8'
+    }
+}
