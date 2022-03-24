@@ -2,10 +2,12 @@ package ru.otus.jdbc.mapper;
 
 import ru.otus.core.repository.DataTemplate;
 import ru.otus.core.repository.executor.DbExecutor;
+import ru.otus.crm.model.Client;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.util.List;
-import java.util.Optional;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Сохратяет объект в базу, читает объект из базы
@@ -22,17 +24,52 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
 
     @Override
     public Optional<T> findById(Connection connection, long id) {
-        throw new UnsupportedOperationException();
+        var client = dbExecutor.executeSelect(connection, entitySQLMetaData.getSelectByIdSql(),
+                List.of(id), rs -> {
+                    try {
+                        if (rs.next()) {
+                            return new Client(rs.getLong("id"), rs.getString("name"));
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e.getNextException());
+                    }
+                    return null;
+                });
+        return (Optional<T>) client;
     }
 
     @Override
     public List<T> findAll(Connection connection) {
-        throw new UnsupportedOperationException();
+        List<Client> clients = new ArrayList<>();
+        dbExecutor.executeSelect(connection, entitySQLMetaData.getSelectAllSql()
+                , List.of(), resultSet -> {
+                    if (resultSet != null) {
+                        try {
+                            while (resultSet.next()) {
+                                clients.add(new Client(resultSet.getLong("id"), resultSet.getString("name")));
+                            }
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e.getNextException());
+                        }
+                    }
+                    return null;
+                });
+
+        return (List<T>) clients;
     }
 
     @Override
     public long insert(Connection connection, T client) {
-        throw new UnsupportedOperationException();
+        try {
+            Field field = client.getClass().getDeclaredField("name");
+            field.setAccessible(true);
+            return dbExecutor.executeStatement(connection, entitySQLMetaData.getInsertSql(),
+                    Collections.singletonList(field.get(client).toString()));
+        } catch (NoSuchFieldException |
+                IllegalAccessException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     @Override
