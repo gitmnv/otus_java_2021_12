@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class EntityClassMetaDataImpl implements EntityClassMetaData {
+public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
 
     private final Class aClass;
 
