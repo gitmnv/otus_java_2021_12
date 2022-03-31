@@ -23,21 +23,25 @@ public class SqlMetaDataImpl implements EntitySQLMetaData {
 
     @Override
     public String getSelectByIdSql() {
-        return "select * from " + toLowerCase(entityClassMetaData.getName()) + " where id = ?";
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("select * from ")
+                .append(toLowerCase(entityClassMetaData.getName()))
+                .append(" where ")
+                .append(toLowerCase(entityClassMetaData.getIdField().getName()))
+                .append(" = ?");
+        return queryBuilder.toString();
     }
 
     @Override
     public String getInsertSql() {
         List<Field> fields = entityClassMetaData.getFieldsWithoutId();
-        // List<Field> fields = Arrays.stream(aClass.getDeclaredFields()).toList();
-        String q = "insert into " + toLowerCase(entityClassMetaData.getName())
-                + "(" + "name" + ")" + " values (?)";
         StringBuilder firstPart = new StringBuilder();
         StringBuilder endPart = new StringBuilder();
         firstPart.append("insert into ").append(toLowerCase(aClass.getSimpleName()))
                 .append(" (");
         endPart.append("values (");
         for (Field field : fields) {
+            // tableListString.append(field.getName() +", ");
             firstPart.append(field.getName());
             firstPart.append(",");
             endPart.append("?,");
@@ -54,12 +58,22 @@ public class SqlMetaDataImpl implements EntitySQLMetaData {
 
     @Override
     public String getUpdateSql() {
-        String q = "update client set name=? where id= ?";
-        StringBuilder firstPart = new StringBuilder();
-        firstPart.append("update ")
+        //"UPDATE Manager SET label = ?, param1 = ? WHERE no = ?";
+        List<Field> fieldList = entityClassMetaData.getFieldsWithoutId();
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("update ")
                 .append(toLowerCase(entityClassMetaData.getName()))
                 .append(" set ");
-        return null;
+
+        for (Field field : fieldList) {
+            queryBuilder.append(toLowerCase(field.getName()))
+                    .append(" = ?, ");
+        }
+        queryBuilder.setLength(queryBuilder.length() - 2);
+        queryBuilder.append(" where ")
+                .append(toLowerCase(entityClassMetaData.getIdField().getName()))
+                .append(" = ?");
+        return queryBuilder.toString();
     }
 
     private String toLowerCase(String data) {
