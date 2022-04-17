@@ -36,23 +36,57 @@ public class DbServiceDemo {
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
 ///
         var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
-        dbServiceClient.saveClient(new Client("dbServiceFirst", new Address("address1"),
-                List.of(new Phone("222-333"))));
 
-        var clientSecond = dbServiceClient.saveClient(new Client("dbServiceSecond",
-                new Address("address2"), List.of(new Phone("333-444"))));
-        var clientSecondSelected = dbServiceClient.getClient(clientSecond.getId())
-                .orElseThrow(() -> new RuntimeException("Client not found, id:" + clientSecond.getId()));
-        log.info("clientSecondSelected:{}", clientSecondSelected);
-///
-        dbServiceClient.saveClient(new Client(clientSecondSelected.getId(), "dbServiceSecondUpdated",
-                clientSecondSelected.getAddress(), clientSecondSelected.getPhones()));
+        //для создания базового набора записей в бд.
+        for (int i = 0; i < 20; i++) {
+           dbServiceClient.saveClient(new Client("dbServiceFirst", new Address("address1"),
+                    List.of(new Phone("222-333"))));
+        }
 
-        var clientUpdated = dbServiceClient.getClient(clientSecondSelected.getId())
-                .orElseThrow(() -> new RuntimeException("Client not found, id:" + clientSecondSelected.getId()));
-        log.info("clientUpdated:{}", clientUpdated);
 
-        log.info("All clients");
-        dbServiceClient.findAll().forEach(client -> log.info("client:{}", client));
+        dbServiceClient.getClient(1L);
+        dbServiceClient.getClient(4L);
+        dbServiceClient.getClient(7L);
+        dbServiceClient.getClient(10L);
+        dbServiceClient.getClient(13L);
+        dbServiceClient.getClient(16L);
+        dbServiceClient.getClient(19L);
+        dbServiceClient.getClient(22L);
+        dbServiceClient.getClient(25L);
+        dbServiceClient.getClient(28L);
+        dbServiceClient.getClient(31L);
+        dbServiceClient.getClient(34L);
+        dbServiceClient.getClient(37L);
+        dbServiceClient.getClient(40L);
+        dbServiceClient.getClient(43L);
+        dbServiceClient.getClient(46L);
+        dbServiceClient.getClient(49L);
+        dbServiceClient.getClient(52L);
+        dbServiceClient.getClient(55L);
+        dbServiceClient.getClient(58L);
+
+        System.out.println("---------Cache---------");
+
+        dbServiceClient.getClient(1L);
+        dbServiceClient.getClient(4L);
+        dbServiceClient.getClient(7L);
+        dbServiceClient.getClient(10L);
+        dbServiceClient.getClient(13L);
+        dbServiceClient.getClient(16L);
+        dbServiceClient.getClient(19L);
+        dbServiceClient.getClient(22L);
+        dbServiceClient.getClient(25L);
+        dbServiceClient.getClient(28L);
+        dbServiceClient.getClient(31L);
+        dbServiceClient.getClient(34L);
+        dbServiceClient.getClient(37L);
+        dbServiceClient.getClient(40L);
+        dbServiceClient.getClient(43L);
+        dbServiceClient.getClient(46L);
+        dbServiceClient.getClient(49L);
+        dbServiceClient.getClient(52L);
+        dbServiceClient.getClient(55L);
+        dbServiceClient.getClient(58L);
+
     }
 }

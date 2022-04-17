@@ -46,4 +46,8 @@ public class Address {
     }
 
 
+    public String toString() {
+        return "Address(id=" + this.getId()
+                + ", street=" + this.getStreet() + ")";
+    }
 }

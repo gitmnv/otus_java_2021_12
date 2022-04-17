@@ -14,7 +14,7 @@ public class Phone {
     @Column(name = "number")
     private String number;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private Client client;
 
@@ -57,5 +57,8 @@ public class Phone {
     }
 
 
-
+    public String toString() {
+        return "Phone(id=" + this.getId() +
+                ", number=" + this.getNumber() +")";
+    }
 }

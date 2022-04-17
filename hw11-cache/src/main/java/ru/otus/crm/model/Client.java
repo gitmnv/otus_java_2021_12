@@ -16,7 +16,7 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
@@ -89,4 +89,10 @@ public class Client implements Cloneable {
         this.phones = phones;
     }
 
+    public String toString() {
+        return "Client(id=" + this.getId() +
+                ", name=" + this.getName() +
+                ", address=" + this.getAddress() + "" +
+                ", phones=" + this.getPhones() + ")";
+    }
 }
