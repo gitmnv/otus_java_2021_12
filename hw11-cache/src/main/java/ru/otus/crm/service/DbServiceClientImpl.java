@@ -30,11 +30,13 @@ public class DbServiceClientImpl implements DBServiceClient {
             if (client.getId() == null) {
 
                 clientDataTemplate.insert(session, clientCloned);
-                cache.put(clientCloned.getId(),clientCloned);
+                cache.put(clientCloned.getId(), clientCloned);
                 log.info("created client: {}", clientCloned);
                 return clientCloned;
             }
             clientDataTemplate.update(session, clientCloned);
+            cache.remove(clientCloned.getId());
+            cache.put(clientCloned.getId(), clientCloned);
             log.info("updated client: {}", clientCloned);
             return clientCloned;
         });
@@ -42,17 +44,17 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     @Override
     public Optional<Client> getClient(long id) {
-       return transactionManager.doInReadOnlyTransaction(session -> {
-           var cacheClient = cache.get(id);
-           if (cacheClient == null) {
-               var clientOptional = clientDataTemplate.findById(session, id);
-               log.info("client: {}", clientOptional);
-               cache.put(id, clientOptional.get());
-               return clientOptional;
-           } else {
-               log.info("client: {}", cacheClient );
-               return Optional.of((Client) cacheClient);
-           }
+        return transactionManager.doInReadOnlyTransaction(session -> {
+            var cacheClient = cache.get(id);
+            if (cacheClient == null) {
+                var clientOptional = clientDataTemplate.findById(session, id);
+                log.info("client: {}", clientOptional);
+                cache.put(id, clientOptional.get());
+                return clientOptional;
+            } else {
+                log.info("client: {}", cacheClient);
+                return Optional.of((Client) cacheClient);
+            }
         });
     }
 
@@ -62,6 +64,6 @@ public class DbServiceClientImpl implements DBServiceClient {
             var clientList = clientDataTemplate.findAll(session);
             log.info("clientList:{}", clientList);
             return clientList;
-       });
+        });
     }
 }

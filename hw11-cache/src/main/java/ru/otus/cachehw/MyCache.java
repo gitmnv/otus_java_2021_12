@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.WeakHashMap;
 
 public class MyCache<K, V> implements HwCache<K, V> {
-    List<WeakReference<HwListener<K, V>>> listeners = new ArrayList<>();
-    WeakHashMap<K, V> cache = new WeakHashMap<>();
+    private final List<WeakReference<HwListener<K, V>>> listeners = new ArrayList<>();
+    private final WeakHashMap<K, V> cache = new WeakHashMap<>();
 
     @Override
     public void put(K key, V value) {
@@ -27,6 +27,7 @@ public class MyCache<K, V> implements HwCache<K, V> {
     public V get(K key) {
         V valuev = cache.get(key);
         notify(key, valuev, "get");
+        System.out.println(cache);
         return valuev;
     }
 
