@@ -19,6 +19,24 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         processConfig(initialConfigClass);
     }
 
+    @Override
+    public <C> C getAppComponent(Class<C> componentClass) {
+        for (Object appComponent : appComponents) {
+            if (appComponent.getClass().getName().equals(componentClass.getName())
+                    || Arrays.stream(appComponent.getClass().getInterfaces())
+                    .allMatch(v -> v.getName().equalsIgnoreCase(componentClass.getName()))
+            ) {
+                return (C) appComponent;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public <C> C getAppComponent(String componentName) {
+        return (C) appComponentsByName.get(componentName);
+    }
+
     private void processConfig(Class<?> configClass) throws Exception {
         checkConfigClass(configClass);
 
@@ -37,7 +55,8 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         }
 
     }
-    private Object [] getParams(Method method){
+
+    private Object[] getParams(Method method) {
         return Arrays.stream(method.getParameterTypes()).map(
                 value -> Optional.ofNullable(getAppComponent(value))
                         .orElseThrow(() -> new RuntimeException("method not found."))
@@ -56,23 +75,5 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         if (!configClass.isAnnotationPresent(componentConfig)) {
             throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
         }
-    }
-
-    @Override
-    public <C> C getAppComponent(Class<C> componentClass) {
-        for (Object appComponent : appComponents) {
-            if (appComponent.getClass().getName().equals(componentClass.getName())
-                    || Arrays.stream(appComponent.getClass().getInterfaces())
-                    .allMatch(v -> v.getName().equalsIgnoreCase(componentClass.getName()))
-            ) {
-                return (C) appComponent;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public <C> C getAppComponent(String componentName) {
-        return (C) appComponentsByName.get(componentName);
     }
 }
